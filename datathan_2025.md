@@ -27,7 +27,7 @@ In the inference data, these fields are absent due to their unavailability for f
 
 For detailed definitions of each field, please refer to the [Data Dictionary](https://drive.google.com/file/d/1tfFlSwFv6wVCa6uhFXHTDrfLNiKQtz6c/view?usp=sharing).
 
-For instructions on downloading the data, refer to the sample code in the _Initialize_ section at the beginning of this notebook.
+For instructions on downloading the data, refer to the sample code in the _Initialize_ section at the beginning of this notebook in the repo: analysis_pipeline/1_data_etl.ipynb.
 
 ## Modeling
 
