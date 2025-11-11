@@ -11,9 +11,10 @@ FutureBright Insurance’s automobile division wants to improve its ability to a
 - Enable more accurate pricing, targeted underwriting, and strategic marketing.
 ### Goal: Segment Risk Profiles
 Approach:
-- Use the predicted expected losses to cluster policies into low, medium, and high-risk groups.
+- Develop an XGBoost-based predictive model that estimates each customer’s expected loss and assigns them to a risk category (Low/Medium/High)
 - Visualize risk distribution by features like vehicle age, driver age, region, or policy type.
 - Deploy to cloud and website - business members select new customer information, and our feature returns the customer's risk level
 
 ### Value:
 - Enables differentiated pricing or eligibility thresholds.
+
