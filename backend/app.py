@@ -2,6 +2,7 @@ import os, json, joblib
 import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 MODEL_DIR = os.getenv("MODEL_DIR", "models")
 
@@ -11,8 +12,20 @@ with open(os.path.join(MODEL_DIR, "feature_columns.json"), "r") as f:
     FEATURE_COLUMNS = json.load(f)
 
 # Risk segmentation (optional)
+# establish cutoffs
 
+# Flask API
 app = Flask(__name__)
+
+# Enable CORS for all origins
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=False,                 # must be False when using "*"
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+    max_age=3600,
+)
 
 def to_dataframe(payload: dict) -> pd.DataFrame:
     # Build a 1-row DataFrame with the exact training columns and order.
