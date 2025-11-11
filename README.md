@@ -5,7 +5,7 @@ Team Members:
 Ashwin Dervesh, Varun Vaidya, Lauren Tetzlaff, Aliese Schmaltz
 
 ### Context
-FutureBright Insurance’s automobile division wants to improve its ability to assess customer risk. Currently, underwriting decisions rely on broad rating tables and limited historical averages. By building a risk segmentation model, your team aims to use data-driven insights to:
+FutureBright Insurance’s automobile division wants to improve its ability to assess customer risk. Currently, underwriting decisions might rely on broad rating tables and limited historical averages. By building a risk segmentation model, our team aims to use data-driven insights to:
 - Quantify each policyholder’s expected loss (claim cost per exposure).
 - Classify potential customers into Low, Medium, and High risk segments.
 - Enable more accurate pricing, targeted underwriting, and strategic marketing.
@@ -16,5 +16,6 @@ Approach:
 - Deploy to cloud and website - business members select new customer information, and our feature returns the customer's risk level
 
 ### Value:
-- Enables differentiated pricing or eligibility thresholds.
+- Enables differentiated pricing or eligibility thresholds, and potentially more profitable business outcomes.
+
 
