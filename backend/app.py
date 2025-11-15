@@ -7,12 +7,38 @@ from flask_cors import CORS
 MODEL_DIR = os.getenv("MODEL_DIR", "models")
 
 # Load model + schema
-model = joblib.load(os.path.join(MODEL_DIR, "rf_model.pkl"))
+model = joblib.load(os.path.join(MODEL_DIR, "freq_sev_xgboost/xgb_model.pkl"))
 with open(os.path.join(MODEL_DIR, "feature_columns.json"), "r") as f:
     FEATURE_COLUMNS = json.load(f)
 
-# Risk segmentation (optional)
-# establish cutoffs
+# Risk segmentation
+with open(os.path.join(MODEL_DIR, "risk_quantiles.json"), "r") as f:
+    quantiles = json.load(f)
+
+kmeans = joblib.load(os.path.join(MODEL_DIR, "freq_sev_xgboost/kmeans_clusters.pkl"))
+
+q33 = quantiles["q33"]
+q66 = quantiles["q66"]
+
+def classify_quantile(pred_per_exposure, type="kmeans"):
+    if type == "kmeans":
+        cluster = kmeans.predict(np.array([[pred_per_exposure]]))[0]
+        cluster_map = {
+            0: "Low",
+            1: "Medium",
+            2: "High"
+        }
+        risk = cluster_map[cluster]
+        return risk
+    # else use quantile method
+    else:
+        if pred_per_exposure <= q33:
+            return "Low"
+        elif pred_per_exposure <= q66:
+            return "Medium"
+        else:
+            return "High"
+        
 
 # Flask API
 app = Flask(__name__)
