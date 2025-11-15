@@ -10,7 +10,7 @@ def group_age_category(cat):
     else:
         return 'Middle'
 
-KEEP_BODIES = {'SEDAN', 'STNWG', 'SUV', 'TRUCK', 'UTE', 'COUPE'}
+KEEP_BODIES = {'SEDAN', 'STNWG', 'SUV', 'TRUCK', 'UTE', 'HDTOP', 'PANVN', 'MIBUS', 'COUPE'}
 def group_vehicle_body(body_style):
     if pd.isna(body_style):
         return 'OTHER'
