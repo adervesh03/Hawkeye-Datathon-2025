@@ -72,11 +72,25 @@ def group_vehicle_body(body_style):
 
 ENCODING_MAP = {
     'marital_status': {'M': 0, 'S': 1},
-    'time_driven': {'12am - 6 am': 0,  '12pm - 6pm': 1,  '6am - 12pm': 2,  '6pm - 12am': 3},
+    'time_driven': {
+        '12am - 6 am': 0,  
+        '12pm - 6pm': 1,  
+        '6am - 12pm': 2,  
+        '6pm - 12am': 3
+    },
     'area': {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5},
     'agecat_grouped': {'Elder': 0, 'Middle': 1, 'Young': 2},
     'gender': {'F': 0, 'M': 1},
-    'veh_color': {'black': 0,  'blue': 1,  'brown': 2,  'gray': 3,  'green': 4,  'red': 5,  'silver': 6,  'white': 7,  'yellow': 8},
+    'veh_color': {
+        'black': 0,  
+        'blue': 1,  
+        'brown': 2,  
+        'gray': 3,  
+        'green': 4,  
+        'red': 5,  
+        'silver': 6,
+        'white': 7,  
+        'yellow': 8},
     'engine_type': {'dissel': 0, 'electric': 1, 'hybrid': 2, 'petrol': 3},
     'veh_body_grouped': {'COUPE': 0,  'OTHER': 1,  'SEDAN': 2,  'STNWG': 3,  'SUV': 4,  'TRUCK': 5,  'UTE': 6}
 }
@@ -120,9 +134,25 @@ def predict():
         df = to_dataframe(payload)
         df = encode_df(df)
 
+        exposure = float(payload["exposure"])
+        if exposure <= 0:
+            raise ValueError("Exposure must be positive.")
+
         # Predict
-        pred = float(model.predict(df)[0])
-        body = {"expected_loss": round(pred, 4), "risk_category": classify_risk(pred, type="kmeans")}
+        raw_pred_total = float(model.predict(df)[0])
+        pred_total_loss = raw_pred_total * RESCALE_FACTOR # rescale to total loss
+        pred_per_exposure = pred_total_loss / exposure  # per exposure
+
+        # Classify risk
+        risk_kmeans = classify_risk(pred_per_exposure, method="kmeans")
+        risk_quantile = classify_risk(pred_per_exposure, method="quantile")
+
+        body = {
+            "pred_total_loss": round(pred_total_loss, 4),
+            "pred_per_exposure": round(pred_per_exposure, 4),
+            "risk_segment_kmeans": risk_kmeans,
+            "risk_segment_quantile": risk_quantile,
+        }
         return jsonify(body), 200
     except ValueError as ve:
         return jsonify({"error": str(ve)}), 400
