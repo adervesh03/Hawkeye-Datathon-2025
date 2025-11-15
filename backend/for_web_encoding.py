@@ -26,7 +26,7 @@ ENCODING_MAP = {
     'gender': {'F': 0, 'M': 1},
     'veh_color': {'black': 0,  'blue': 1,  'brown': 2,  'gray': 3,  'green': 4,  'red': 5,  'silver': 6,  'white': 7,  'yellow': 8},
     'engine_type': {'dissel': 0, 'electric': 1, 'hybrid': 2, 'petrol': 3},
-    'veh_body_grouped': {'COUPE': 0,  'OTHER': 1,  'SEDAN': 2,  'STNWG': 3,  'SUV': 4,  'TRUCK': 5,  'UTE': 6}
+    'veh_body_grouped': {'COUPE': 0,  'HDTOP': 1,  'MIBUS': 2,  'OTHER': 3,  'PANVN': 4,  'SEDAN': 5,  'STNWG': 6, 'SUV': 7, 'TRUCK': 8, 'UTE': 9}
 }
 
 
