@@ -1,9 +1,22 @@
 # frontend/Dockerfile
+FROM node:18-alpine AS build
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage
 FROM nginx:alpine
-
-# Cloud Run expects the app to listen on $PORT.
-# NGINX default is 80/8080; we’ll set it via a custom conf.
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy the static build output
-COPY dist /usr/share/nginx/html
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
