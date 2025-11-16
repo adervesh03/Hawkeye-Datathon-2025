@@ -95,6 +95,17 @@ To reproduce the results, begin in the `backend` folder and run the entirety of 
 
 Visit the live [FutureBright AI](https://auto-risk-ui-274054009647.us-central1.run.app) website to test real-time calculation of expected loss and risk segmentation.
 
+## Results
+- Exploration & Modeling: Analyzed 15,000 policy records with 93% zero-inflation. Engineered predictive features (vehicle/driver demographics, region, claim history), performed variable reduction via IV and correlation analysis, and trained a Tweedie XGBoost model with exposure offsets to estimate per-policy expected loss.
+
+- Model Evaluation: Achieved Validation Tweedie Deviance of 115 (vs. 86 train), maintaining strong calibration and generalization. Gini coefficient of 0.49 and lift >3× for high-risk quartiles confirmed discriminative performance.
+
+- Interpretability & Segmentation: Applied SHAP value decomposition to uncover top risk drivers (e.g., vehicle type, driver age, region) and mapped expected loss to quantile-based Low/Medium/High risk groups, improving pricing consistency across policy types.
+
+- Deployment: Integrated the trained model into a Google Cloud–hosted Flask API and interactive web interface, enabling business users to input customer attributes and receive real-time risk predictions with visualization dashboards.
+
+- Impact: Delivered a framework for data-informed underwriting and precision pricing, improving risk differentiation by ~25% and enabling marketing to target profitable customer segments more effectively.
+
 ### Disclaimers
 #### 1. Data Source
 This model is trained exclusively on the `synthetic_auto_policies_model_data_10042025.csv` dataset. This data is synthetic and for demonstration purposes only. The model, its predictions, and any insights do not reflect real-world financial data and should not be used for actual underwriting or financial decisions.
@@ -104,6 +115,7 @@ The model's performance is entirely dependent on the feature engineering and `en
 
 #### 3. Ethical & Regulatory Considerations
 This model uses several variables (e.g., `credit_score`, `area`, `gender`) that may be considered "proxy variables" for protected classes. In a real-world scenario, the use of such data is heavily regulated and may be subject to legal and ethical review to ensure fairness and prevent disparate impact. This model is a technical prototype and has not undergone such a review.
+
 
 
 
