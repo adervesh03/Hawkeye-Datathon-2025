@@ -16,7 +16,7 @@ FutureBright Insurance’s automobile division wants to improve its ability to a
 Approach:
 - Develop an XGBoost-based predictive model that estimates each customer’s expected loss and assigns them to a risk category (Low/Medium/High)
 - Visualize risk distribution by features like vehicle age, driver age, region, or policy type.
-- Deploy to cloud and website - business members select new customer information, and our feature returns the customer's risk level
+- Deploy to Google Cloud - business members select new customer information, and our feature returns the customer's risk level
 
 ### Value:
 - Enables differentiated pricing or eligibility thresholds, and potentially more profitable business outcomes.
@@ -104,6 +104,7 @@ The model's performance is entirely dependent on the feature engineering and `en
 
 #### 3. Ethical & Regulatory Considerations
 This model uses several variables (e.g., `credit_score`, `area`, `gender`) that may be considered "proxy variables" for protected classes. In a real-world scenario, the use of such data is heavily regulated and may be subject to legal and ethical review to ensure fairness and prevent disparate impact. This model is a technical prototype and has not undergone such a review.
+
 
 
 
