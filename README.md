@@ -29,10 +29,12 @@ It is highly recommended to use a virtual environment (like venv or conda) to ma
 # Create a virtual environment
 python -m venv .venv
 ```
+Activate it:
 ```
-# Activate it
 # On Windows:
 .\.venv\Scripts\activate
+```
+```
 # On macOS/Linux:
 source .venv/bin/activate
 ```
@@ -59,5 +61,6 @@ The model's performance is entirely dependent on the feature engineering and `en
 
 #### 3. Ethical & Regulatory Considerations
 This model uses several variables (e.g., `credit_score`, `area`, `gender`) that may be considered "proxy variables" for protected classes. In a real-world scenario, the use of such data is heavily regulated and may be subject to legal and ethical review to ensure fairness and prevent disparate impact. This model is a technical prototype and has not undergone such a review.
+
 
 
