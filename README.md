@@ -57,10 +57,11 @@ ADD WEBSITE INSTRUCTIONS HERE
 This model is trained exclusively on the `synthetic_auto_policies_model_data_10042025.csv` dataset. This data is synthetic and for demonstration purposes only. The model, its predictions, and any insights do not reflect real-world financial data and should not be used for actual underwriting or financial decisions.
 
 #### 2. Model & Encoding
-The model's performance is entirely dependent on the feature engineering and `encoding_map` generated in the `data_exploration.ipynb` notebook and also defined as `ENCODING_MAP` in the `app.py` file. The API endpoint requires this exact mapping to function. Any change to the encoding logic or the model training will _require_ the API's `ENCODING_MAP` constant to be updated.
+The model's performance is entirely dependent on the feature engineering and `encoding_map` generated in the `data_exploration.ipynb` notebook, and also defined as `ENCODING_MAP` in the `app.py` file. The API endpoint requires this exact mapping to function. Any change to the encoding logic or the model training will _require_ the API's `ENCODING_MAP` constant to be updated.
 
 #### 3. Ethical & Regulatory Considerations
 This model uses several variables (e.g., `credit_score`, `area`, `gender`) that may be considered "proxy variables" for protected classes. In a real-world scenario, the use of such data is heavily regulated and may be subject to legal and ethical review to ensure fairness and prevent disparate impact. This model is a technical prototype and has not undergone such a review.
+
 
 
 
