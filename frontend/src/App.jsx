@@ -8,22 +8,22 @@ export default function App() {
   }, []);
 
   const [form, setForm] = useState({
-    veh_value: 6.36,
+    veh_value: 6.5,
     veh_body: "SUV",
     veh_age: 3,
-    engine_type: "hybrid",
+    engine_type: "gas",
     max_power: 128,
     veh_color: "silver",
     gender: "M",
     agecat: 2,
     e_bill: 1,
     area: "A",
-    time_of_week_driven: "weekend",
-    time_driven: "6am - 12pm",
+    time_driven: "12pm - 6pm",
     marital_status: "S",
     low_education_ind: 0,
-    credit_score: 644.7218082,
-    driving_history_score: 81,
+    credit_score: 650,
+    driving_history_score: 85,
+    exposure: 0.45
   });
 
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,7 @@ export default function App() {
             <Field label="Engine Type">
               <select className="input" value={form.engine_type}
                       onChange={(e)=>upd("engine_type", e.target.value)}>
-                {["gas","diesel","hybrid","electric","other"].map(x=>(
+                {["petrol","diesel","hybrid","electric"].map(x=>(
                   <option key={x} value={x}>{x}</option>
                 ))}
               </select>
@@ -99,8 +99,10 @@ export default function App() {
                      onChange={(e)=>upd("max_power", toNum(e.target.value))}/>
             </Field>
             <Field label="Vehicle Color">
-              <input className="input" value={form.veh_color}
-                     onChange={(e)=>upd("veh_color", e.target.value)}/>
+              <select className="input" value={form.veh_color}
+                      onChange={(e)=>upd("veh_color", e.target.value)}>
+                {["black","blue","brown","gray","green","red","silver","white","yellow"].map(x=> <option key={x} value={x}>{x}</option>)}
+              </select>
             </Field>
           </Card>
 
@@ -143,6 +145,10 @@ export default function App() {
               <input className="input" type="number" value={form.driving_history_score}
                      onChange={(e)=>upd("driving_history_score", toNum(e.target.value))}/>
             </Field>
+            <Field label="Exposure">
+              <input className="input" type="number" value={form.exposure}
+                     onChange={(e)=>upd("exposure", toNum(e.target.value))}/>
+            </Field>
           </Card>
 
           <Card title="Driving Behavior">
@@ -150,14 +156,6 @@ export default function App() {
               <select className="input" value={form.area}
                       onChange={(e)=>upd("area", e.target.value)}>
                 {["A","B","C","D","Urban","Suburban","Rural"].map(x=>(
-                  <option key={x} value={x}>{x}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Time of Week Driven">
-              <select className="input" value={form.time_of_week_driven}
-                      onChange={(e)=>upd("time_of_week_driven", e.target.value)}>
-                {["weekday","weekend","mixed"].map(x=>(
                   <option key={x} value={x}>{x}</option>
                 ))}
               </select>
@@ -174,7 +172,7 @@ export default function App() {
 
           <div className="actions">
             <button className="button" type="submit" disabled={loading}>
-              {loading ? "Scoring…" : "Get Risk"}
+              {loading ? "Loading..." : "Calculate"}
             </button>
             {err && <div className="error">{err}</div>}
           </div>
@@ -183,13 +181,37 @@ export default function App() {
         {result && (
           <div className="results">
             <div className="stat">
-              <div className="stat-label">Expected Loss</div>
-              <div className="stat-value">{fmtUSD(result.expected_loss)}</div>
+              <div className="stat-label">Predicted Total Loss</div>
+              <div className="stat-value">
+                {fmtUSD(result.pred_total_loss)}
+              </div>
             </div>
-            {"risk_segment" in result && (
+
+            <div className="stat">
+              <div className="stat-label">Predicted Loss per Exposure</div>
+              <div className="stat-value">
+                {fmtUSD(result.pred_per_exposure)}
+              </div>
+            </div>
+
+            <div className="stat">
+              <div className="stat-label">Calibrated Loss per Exposure</div>
+              <div className="stat-value">
+                {fmtUSD(result.pred_per_exposure_rescale)}
+              </div>
+            </div>
+
+            {"risk_segment_kmeans" in result && (
               <div className="stat">
-                <div className="stat-label">Risk Segment</div>
-                <div className="stat-value">{result.risk_segment}</div>
+                <div className="stat-label">Risk Segment (K-Means)</div>
+                <div className="stat-value">{result.risk_segment_kmeans}</div>
+              </div>
+            )}
+
+            {"risk_segment_quantile" in result && (
+              <div className="stat">
+                <div className="stat-label">Risk Segment (Quantile)</div>
+                <div className="stat-value">{result.risk_segment_quantile}</div>
               </div>
             )}
           </div>
@@ -238,11 +260,11 @@ function serialize(f) {
     agecat: toInt(f.agecat),
     e_bill: toInt(f.e_bill),
     area: f.area,
-    time_of_week_driven: f.time_of_week_driven,
     time_driven: f.time_driven,
     marital_status: f.marital_status,
     low_education_ind: toInt(f.low_education_ind),
     credit_score: toNum(f.credit_score),
     driving_history_score: toNum(f.driving_history_score),
+    exposure: toNum(f.exposure),
   };
 }

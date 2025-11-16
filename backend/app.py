@@ -1,15 +1,16 @@
 import os, json, joblib
 import numpy as np
 import pandas as pd
+import xgboost as xgb
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 # -------------- Helper Functions -------------- #
 
-MODEL_DIR = os.getenv("MODEL_DIR", "models")
+MODEL_DIR = os.getenv("MODEL_DIR", "models/freq_sev_xgboost")
 
 # Load model + schema
-model = joblib.load(os.path.join(MODEL_DIR, "freq_sev_xgboost/xgb_model.pkl"))
+model = joblib.load(os.path.join(MODEL_DIR, "xgb_model.pkl"))
 with open(os.path.join(MODEL_DIR, "feature_columns.json"), "r") as f:
     FEATURE_COLUMNS = json.load(f)
 
@@ -19,7 +20,9 @@ with open(os.path.join(MODEL_DIR, "risk_quantiles.json"), "r") as f:
 
 q33 = quantiles["q33"]
 q66 = quantiles["q66"]
-kmeans = joblib.load(os.path.join(MODEL_DIR, "freq_sev_xgboost/kmeans_clusters.pkl"))
+kmeans = joblib.load(os.path.join(MODEL_DIR, "kmeans_clusters.pkl"))
+
+RESCALE_FACTOR = 1.65  # Adjust as needed
 
 # Classifies pred_per_exposure into Low, Medium, High risk categories
 def classify_risk(pred_per_exposure, type="kmeans"):
@@ -40,17 +43,6 @@ def classify_risk(pred_per_exposure, type="kmeans"):
             return "Medium"
         else:
             return "High"
-        
-# Convert incoming JSON payload to DataFrame
-def to_dataframe(payload: dict) -> pd.DataFrame:
-    # Build a 1-row DataFrame with the exact training columns and order.
-    # Missing columns -> error; extra fields -> ignored.
-    missing = [c for c in FEATURE_COLUMNS if c not in payload]
-    if missing:
-        raise ValueError(f"Missing required feature(s): {missing}")
-    # Use only known columns, in order
-    row = {c: payload[c] for c in FEATURE_COLUMNS}
-    return pd.DataFrame([row], columns=FEATURE_COLUMNS)
 
 # Encoding functions
 def group_age_category(cat):
@@ -131,28 +123,45 @@ def health():
 def predict():
     try:
         payload = request.get_json(force=True)
-        df = to_dataframe(payload)
-        df = encode_df(df)
+        df_raw = pd.DataFrame([payload])
+        df = encode_df(df_raw)
+
+        print("Processed Dataframe: ", df)
+
+        missing = [c for c in FEATURE_COLUMNS if c not in df.columns]
+        if missing:
+            raise ValueError(f"Missing required feature(s) after encoding: {missing}")
+
+        df = df[FEATURE_COLUMNS]
 
         exposure = float(payload["exposure"])
         if exposure <= 0:
             raise ValueError("Exposure must be positive.")
+        exposure_vec = np.array([exposure], dtype=np.float32)
 
         # Predict
-        raw_pred_total = float(model.predict(df)[0])
-        pred_total_loss = raw_pred_total * RESCALE_FACTOR # rescale to total loss
-        pred_per_exposure = pred_total_loss / exposure  # per exposure
+        data = xgb.DMatrix(
+            df,
+            base_margin=np.log(exposure_vec)
+        )
+        raw_pred_total = float(model.predict(data)[0])
+
+        pred_per_exposure = raw_pred_total / exposure  # per exposure
+
+        pred_per_exposure_rescale = pred_per_exposure * RESCALE_FACTOR 
 
         # Classify risk
-        risk_kmeans = classify_risk(pred_per_exposure, method="kmeans")
-        risk_quantile = classify_risk(pred_per_exposure, method="quantile")
+        risk_kmeans = classify_risk(pred_per_exposure, type="kmeans")
+        risk_quantile = classify_risk(pred_per_exposure, type="quantile")
 
         body = {
-            "pred_total_loss": round(pred_total_loss, 4),
-            "pred_per_exposure": round(pred_per_exposure, 4),
+            "pred_total_loss": round(raw_pred_total, 2),
+            "pred_per_exposure": round(pred_per_exposure, 2),
+            "pred_per_exposure_rescale": round(pred_per_exposure_rescale, 2),
             "risk_segment_kmeans": risk_kmeans,
             "risk_segment_quantile": risk_quantile,
         }
+        print(f"Prediction Result: {body}", flush=True)
         return jsonify(body), 200
     except ValueError as ve:
         return jsonify({"error": str(ve)}), 400
